@@ -1,3 +1,6 @@
+const mongoose = require('mongoose');
+const mockProxy = require('./mock-proxy');
+
 module.exports = async function (cb) {
   const {
     op,
@@ -6,8 +9,7 @@ module.exports = async function (cb) {
   } = this;
   const Model = mongoose.model(modelName);
 
-  let mock =
-    mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName][op];
+  let mock = mockProxy.__mocks[modelName] && mockProxy.__mocks[modelName][op];
 
   let err = null;
 
