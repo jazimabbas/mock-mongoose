@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const mockingoose = require('../');
+const mockingoose = require('../src');
 const User = require('./User');
 
-jest.setTimeout(15000);
+jest.setTimeout(500);
 
 describe('mockingoose', () => {
   beforeEach(() => {
@@ -243,7 +243,8 @@ describe('mockingoose', () => {
         });
     });
 
-    it('should update with callback', (done) => {
+    // DEPRICATED
+    it.skip('should update with callback', (done) => {
       mockingoose(User).toReturn({ ok: 1, nModified: 1, n: 1 }, 'updateOne');
 
       User.updateOne(
@@ -257,7 +258,8 @@ describe('mockingoose', () => {
       );
     });
 
-    it('should aggregate with callback', (done) => {
+    // DEPRICATED
+    it.skip('should aggregate with callback', (done) => {
       mockingoose(User).toReturn(
         [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }],
         'aggregate'
@@ -282,7 +284,8 @@ describe('mockingoose', () => {
       );
     });
 
-    it('should aggregate with callback using function', (done) => {
+    // DEPRICATED
+    it.skip('should aggregate with callback using function', (done) => {
       mockingoose(User).toReturn((agg) => {
         expect(agg).toBeInstanceOf(mongoose.Aggregate);
         return [{ _id: { accountId: '5aef17c3d7c488f401c101bd' } }];
@@ -377,7 +380,8 @@ describe('mockingoose', () => {
       ).rejects.toEqual(error);
     });
 
-    it('should find with callback', (done) => {
+    // DEPRICATED
+    it.skip('should find with callback', (done) => {
       const docObj = [{ name: 'name' }];
       mockingoose(User).toReturn(docObj);
 
@@ -494,7 +498,8 @@ describe('mockingoose', () => {
       expect(result).toMatchObject(doc);
     });
 
-    it('return correct mock for remove', async () => {
+    // DEPRICATED
+    it.skip('return correct mock for remove', async () => {
       const doc = { n: 0, ok: 0, deletedCount: 0 };
       mockingoose(User).toReturn(doc, 'remove');
 
@@ -551,7 +556,7 @@ describe('mockingoose', () => {
   });
 
   describe('check all instance methods', () => {
-    const instanceMethods = ['save', 'remove'];
+    const instanceMethods = ['save'];
 
     instanceMethods.forEach((op) => {
       it(`${op} resolves its promise correctly`, async () => {
@@ -676,6 +681,10 @@ describe('mockingoose', () => {
             args.push({}, {});
           }
 
+          if (!User[op]) {
+            return;
+          }
+
           return User[op](...args).then((doc) =>
             expect(
               doc instanceof mongoose.Model ? doc.toObject() : doc
@@ -700,6 +709,11 @@ describe('mockingoose', () => {
             args.push({}, {});
           }
 
+          if (!User[op]) {
+            done();
+            return;
+          }
+
           User[op](...args).exec((err, doc) => {
             expect(err).toBeNull();
             expect(
@@ -711,7 +725,8 @@ describe('mockingoose', () => {
       });
     });
 
-    describe('with callback', () => {
+    // DEPRICATED
+    describe.skip('with callback', () => {
       ops.forEach((op) => {
         it(op, (done) => {
           const mocked = {
@@ -755,12 +770,12 @@ describe('mockingoose', () => {
   describe('mongoose connections', () => {
     it('should mock mongoose.connect', async () => {
       await mongoose.connect('mock');
-      expect(mongoose.connect).toBeCalled();
+      expect(mongoose.connect.called).toBe(true);
     });
 
     it('should mock mongoose.createConnection', (done) => {
       mongoose.createConnection('mock').then(() => {
-        expect(mongoose.createConnection).toBeCalled();
+        expect(mongoose.createConnection.called).toBe(true);
         done();
       });
     });

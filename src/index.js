@@ -1,44 +1,23 @@
 const mongoose = require('mongoose');
+const sinon = require('sinon');
 
 if (!/^5/.test(mongoose.version)) {
   mongoose.Promise = Promise;
 }
 
-mongoose.connect = jest.fn().mockImplementation(() => Promise.resolve());
+sinon.stub(mongoose, 'connect').resolves();
 
-mongoose.createConnection = jest.fn().mockReturnValue({
+sinon.stub(mongoose, 'createConnection').returns({
   catch() {
     /* no op */
   },
   model: mongoose.model.bind(mongoose),
-  on: jest.fn(),
-  once: jest.fn(),
+  on: sinon.stub(),
+  once: sinon.stub(),
   then(resolve) {
     return Promise.resolve(resolve(this));
   },
 });
-
-const ops = [
-  'find',
-  'findOne',
-  'count',
-  'countDocuments',
-  'estimatedDocumentCount',
-  'distinct',
-  'findOneAndUpdate',
-  'findOneAndDelete',
-  'findOneAndRemove',
-  'findOneAndReplace',
-  'remove',
-  'update',
-  'updateOne',
-  'updateMany',
-  'deleteOne',
-  'deleteMany',
-  'save',
-  'aggregate',
-  '$save',
-];
 
 const mockedReturn = async function (cb) {
   const {
@@ -116,137 +95,59 @@ const mockedReturn = async function (cb) {
   return mock;
 };
 
-ops.forEach((op) => {
-  mongoose.Query.prototype[op] = jest
-    .fn()
-    .mockImplementation(function (criteria, doc, options, callback) {
-      if (
-        [
-          'find',
-          'findOne',
-          'count',
-          'countDocuments',
-          'remove',
-          'deleteOne',
-          'deleteMany',
-          'update',
-          'updateOne',
-          'updateMany',
-          'findOneAndUpdate',
-          'findOneAndRemove',
-          'findOneAndDelete',
-          'findOneAndReplace',
-        ].includes(op) &&
-        typeof criteria !== 'function'
-      ) {
-        // find and findOne can take conditions as the first paramter
-        // ensure they make it into the Query conditions
-        this.merge(criteria);
-      }
-
-      if (['distinct'].includes(op) && typeof doc !== 'function') {
-        // distinct has the conditions as the second parameter
-        this.merge(doc);
-      }
-
-      if (/update/i.test(op) && typeof doc !== 'function' && doc) {
-        this.setUpdate(doc);
-      }
-
-      switch (arguments.length) {
-        case 4:
-        case 3:
-          if (typeof options === 'function') {
-            callback = options;
-            options = {};
-          }
-          break;
-        case 2:
-          if (typeof doc === 'function') {
-            callback = doc;
-            doc = criteria;
-            criteria = undefined;
-          }
-          options = undefined;
-          break;
-        case 1:
-          if (typeof criteria === 'function') {
-            callback = criteria;
-            criteria = options = doc = undefined;
-          } else {
-            doc = criteria;
-            criteria = options = undefined;
-          }
-      }
-
-      this.op = op;
-
-      if (!callback) {
-        return this;
-      }
-
-      return this.exec.call(this, callback);
-    });
-});
-
-mongoose.Query.prototype.exec = jest.fn().mockImplementation(function (cb) {
+sinon.stub(mongoose.Query.prototype, 'exec').callsFake(function (cb) {
   return mockedReturn.call(this, cb);
 });
 
-mongoose.Query.prototype.orFail = jest
-  .fn()
-  .mockImplementation(async function (err) {
-    return this.then((doc) => {
-      const hasAnyDocs = doc && Array.isArray(doc) && doc.length > 0;
+sinon.stub(mongoose.Query.prototype, 'orFail').callsFake(function (err) {
+  return this.then((doc) => {
+    const hasAnyDocs = doc && Array.isArray(doc) && doc.length > 0;
 
-      if (!doc || !hasAnyDocs) {
-        if (!err) throw new Error();
+    if (!doc || !hasAnyDocs) {
+      if (!err) throw new Error();
 
-        const isErrorFn = typeof err === 'function';
-        throw isErrorFn ? err() : new Error(err);
-      }
+      const isErrorFn = typeof err === 'function';
+      throw isErrorFn ? err() : new Error(err);
+    }
 
-      return this;
-    }).catch((err) => {
-      throw err;
-    });
+    return this;
+  }).catch((err) => {
+    throw err;
   });
+});
 
-mongoose.Aggregate.prototype.exec = jest
-  .fn()
-  .mockImplementation(async function (cb) {
-    const {
-      _model: { modelName },
-    } = this;
+sinon.stub(mongoose.Aggregate.prototype, 'exec').callsFake(async function (cb) {
+  const {
+    _model: { modelName },
+  } = this;
 
-    let mock =
-      mockingoose.__mocks[modelName] &&
-      mockingoose.__mocks[modelName].aggregate;
+  let mock =
+    mockingoose.__mocks[modelName] && mockingoose.__mocks[modelName].aggregate;
 
-    let err = null;
+  let err = null;
 
-    if (mock instanceof Error) {
-      err = mock;
-    }
+  if (mock instanceof Error) {
+    err = mock;
+  }
 
-    if (typeof mock === 'function') {
-      mock = await mock(this);
-    }
+  if (typeof mock === 'function') {
+    mock = await mock(this);
+  }
 
-    if (cb) {
-      return cb(err, mock);
-    }
+  if (cb) {
+    return cb(err, mock);
+  }
 
-    if (err) {
-      throw err;
-    }
+  if (err) {
+    throw err;
+  }
 
-    return mock;
-  });
+  return mock;
+});
 
-mongoose.Model.insertMany = jest
-  .fn()
-  .mockImplementation(function (arr, options, cb) {
+sinon
+  .stub(mongoose.Model, 'insertMany')
+  .callsFake(function (_arr, options, cb) {
     const op = 'insertMany';
     const { modelName } = this;
 
@@ -261,12 +162,12 @@ mongoose.Model.insertMany = jest
     return mockedReturn.call(this, cb);
   });
 
-const instance = ['remove', 'save', '$save'];
+const instance = ['save', '$save', 'updateOne', 'deleteOne'];
 
 instance.forEach((methodName) => {
-  mongoose.Model.prototype[methodName] = jest
-    .fn()
-    .mockImplementation(function (options, cb) {
+  sinon
+    .stub(mongoose.Model.prototype, methodName)
+    .callsFake(function (options, cb) {
       const op = methodName;
       const { modelName } = this.constructor;
 
@@ -314,8 +215,6 @@ instance.forEach((methodName) => {
       });
     });
 });
-
-jest.doMock('mongoose', () => mongoose);
 
 // extend a plain function, we will override it with the Proxy later
 const proxyTarget = Object.assign(() => void 0, {
