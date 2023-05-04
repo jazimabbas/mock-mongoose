@@ -1,17 +1,21 @@
-# Mockingoose [![CircleCI](https://circleci.com/gh/alonronin/mockingoose/tree/master.svg?style=svg)](https://circleci.com/gh/alonronin/mockingoose/tree/master)
+# Mongoose Mockify
+
+[![Run Test and Lint](https://github.com/jazimabbas/mongoose-mockify/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/jazimabbas/mongoose-mockify/actions/workflows/nodejs.yml)
 
 ![logo]
 
-> A Jest package for mocking mongoose models
+> A utility package for mocking mongoose models
 
 ## Installation
 
 With NPM:
+
 ```bash
 $ npm i mockingoose -D
 ```
 
 With Yarn:
+
 ```bash
 $ yarn add mockingoose -D
 ```
@@ -20,7 +24,6 @@ $ yarn add mockingoose -D
 
 ```js
 const mockingoose = require('mockingoose');
-
 ```
 
 ## Usage
@@ -59,7 +62,7 @@ describe('test mongoose User model', () => {
 
     mockingoose(model).toReturn(_doc, 'findOne');
 
-    return model.findById({ _id: '507f191e810c19729de860ea' }).then(doc => {
+    return model.findById({ _id: '507f191e810c19729de860ea' }).then((doc) => {
       expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
     });
   });
@@ -76,7 +79,7 @@ describe('test mongoose User model', () => {
     return model
       .update({ name: 'changed' }) // this won't really change anything
       .where({ _id: '507f191e810c19729de860ea' })
-      .then(doc => {
+      .then((doc) => {
         expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
       });
   });
@@ -103,7 +106,7 @@ describe('test mongoose User model', () => {
       name: 'name',
       email: 'name@email.com',
     };
-    const finderMock = query => {
+    const finderMock = (query) => {
       expect(query.getQuery()).toMatchSnapshot('findById query');
 
       if (query.getQuery()._id === '507f191e810c19729de860ea') {
@@ -113,7 +116,7 @@ describe('test mongoose User model', () => {
 
     mockingoose(model).toReturn(finderMock, 'findOne'); // findById is findOne
 
-    return model.findById('507f191e810c19729de860ea').then(doc => {
+    return model.findById('507f191e810c19729de860ea').then((doc) => {
       expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
     });
   });
@@ -191,17 +194,19 @@ All operations work with `exec`, `promise` and `callback`.
   ```js
   mockingoose(model).toReturn(new Error('My Error'), 'save');
 
-  return model.create({ name: 'name', email: 'name@email.com' }).catch(err => {
-    expect(err.message).toBe('My Error');
-  });
+  return model
+    .create({ name: 'name', email: 'name@email.com' })
+    .catch((err) => {
+      expect(err.message).toBe('My Error');
+    });
   ```
 
-- you can mock `.populate` in your mocked result just be sure to change 
+- you can mock `.populate` in your mocked result just be sure to change
   the `Schema`'s path to appropriate type (eg: `Object` | `Mixed`):
-  
+
   ```js
   User.schema.path('foreignKey', Object);
-  
+
   const doc = {
     email: 'test@mail.com',
     foreignKey: {
@@ -212,16 +217,15 @@ All operations work with `exec`, `promise` and `callback`.
     name: 'Name',
     saveCount: 1,
   };
-    
+
   mockingoose(User).toReturn(doc);
-    
+
   const result = await User.find();
-    
+
   expect(result).toMatchObject(doc);
   ```
 
 - you can mock the `Model.exists()` by passing the `findOne` operator. see [Issue #69](https://github.com/alonronin/mockingoose/issues/69)
-  
 - no connection is made to the database (mongoose.connect is jest.fn())
 
 - will work with node 6.4.x. tested with mongoose 4.x and jest 20.x.
@@ -239,13 +243,3 @@ All operations work with `exec`, `promise` and `callback`.
   The function is called with either a [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) object from Mongoose, depending on the request. This allows tests to ensure that proper queries are sent out, and helps with regression testing.
 
 [logo]: http://animals.sandiegozoo.org/sites/default/files/2016-12/DwarfMongoose_ZN.jpg
-
-### Shoutout to our amazing community
-
-#### Stargazers
-
-[![Stargazers repo roster for @alonronin/mockingoose](https://reporoster.com/stars/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/stargazers)
-
-#### Forkers
-
-[![Forkers repo roster for @alonronin/mockingoose](https://reporoster.com/forks/alonronin/mockingoose)](https://github.com/alonronin/mockingoose/network/members)

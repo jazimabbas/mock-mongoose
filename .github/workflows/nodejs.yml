@@ -1,13 +1,12 @@
-name: Run Test and Lint
+name: Mongoose Mockify
 
 on:
   push:
     branches:
       - master
-      - 'feature/*'
 
 jobs:
-  test-and-lint:
+  lint-and-test:
     runs-on: ubuntu-latest
 
     steps:
