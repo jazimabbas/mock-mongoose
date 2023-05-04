@@ -1,30 +1,36 @@
 {
-  "name": "mockingoose",
-  "version": "2.16.2",
-  "description": "A Jest package for mocking mongoose models",
+  "name": "mongoose-mockify",
+  "version": "1.0.0",
+  "description": "A package for mocking mongoose models",
   "main": "./lib",
   "types": "./types.d.ts",
+  "files": [
+    "lib/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "jest",
-    "dev": "yarn build -w",
+    "dev": "npm run build -w",
     "build": "babel src -d lib -s",
-    "lint": "prettier -c src"
+    "lint": "prettier -c src",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alonronin/mockingoose.git"
+    "url": "git+https://github.com/jazimabbas/mongoose-mockify.git"
   },
   "keywords": [
-    "jest",
+    "testing",
     "mock",
     "mongoose"
   ],
-  "author": "Alon Valadji",
+  "author": "Jazim Abbas",
   "license": "The Unlicense",
   "bugs": {
-    "url": "https://github.com/alonronin/mockingoose/issues"
+    "url": "https://github.com/jazimabbas/mongoose-mockify/issues"
   },
-  "homepage": "https://github.com/alonronin/mockingoose#readme",
+  "homepage": "https://github.com/jazimabbas/mongoose-mockify#readme",
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/preset-env": "^7.20.2",
