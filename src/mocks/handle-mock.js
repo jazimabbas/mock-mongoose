@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mockProxy = require('./mock-proxy');
+const mockProxy = require('../mock-proxy');
 
 module.exports = async function (cb) {
   const {
