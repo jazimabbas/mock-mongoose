@@ -1,7 +1,7 @@
 {
   "name": "mongoose-mockify",
   "version": "1.0.0",
-  "description": "A package for mocking mongoose models",
+  "description": "Package for mocking Mongoose models that can be utilized with any node.js testing library such as Jest, Mocha, and Vitest etc..",
   "main": "./lib",
   "types": "./types.d.ts",
   "files": [

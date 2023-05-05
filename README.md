@@ -1,29 +1,21 @@
-# Mongoose Mockify
-
-[![Run Test and Lint](https://github.com/jazimabbas/mongoose-mockify/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/jazimabbas/mongoose-mockify/actions/workflows/nodejs.yml)
+# Mongoose Mockify [![Run Test and Lint](https://github.com/jazimabbas/mongoose-mockify/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/jazimabbas/mongoose-mockify/actions/workflows/nodejs.yml)
 
 ![logo]
 
-> A utility package for mocking mongoose models
+> A Package for mocking Mongoose models that can be utilized with any node.js testing library such as Jest, Mocha, and Vitest etc ..
 
 ## Installation
 
 With NPM:
 
 ```bash
-$ npm i mockingoose -D
-```
-
-With Yarn:
-
-```bash
-$ yarn add mockingoose -D
+$ npm i mongoose-mockify -D
 ```
 
 ## Import the library
 
 ```js
-const mockingoose = require('mockingoose');
+const mockify = require('mongoose-mockify');
 ```
 
 ## Usage
@@ -42,13 +34,13 @@ const schema = Schema({
 module.exports = mongoose.model('User', schema);
 ```
 
-#### mockingoose(Model).toReturn(obj, operation = 'find')
+#### mockify(Model).toReturn(obj, operation = 'find')
 
 Returns a plain object.
 
 ```js
 // __tests__/user.test.js
-const mockingoose = require('mockingoose');
+const mockify = require('mongoose-mockify');
 
 const model = require('./user');
 
@@ -60,7 +52,7 @@ describe('test mongoose User model', () => {
       email: 'name@email.com',
     };
 
-    mockingoose(model).toReturn(_doc, 'findOne');
+    mockify(model).toReturn(_doc, 'findOne');
 
     return model.findById({ _id: '507f191e810c19729de860ea' }).then((doc) => {
       expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
@@ -74,7 +66,7 @@ describe('test mongoose User model', () => {
       email: 'name@email.com',
     };
 
-    mockingoose(model).toReturn(_doc, 'update');
+    mockify(model).toReturn(_doc, 'update');
 
     return model
       .update({ name: 'changed' }) // this won't really change anything
@@ -86,7 +78,7 @@ describe('test mongoose User model', () => {
 });
 ```
 
-#### mockingoose(Model).toReturn(fn, operation = 'find')
+#### mockify(Model).toReturn(fn, operation = 'find')
 
 Allows passing a function in order to return the result.
 
@@ -96,7 +88,7 @@ You can use [snapshots](https://jestjs.io/docs/en/snapshot-testing) to automatic
 
 ```js
 // __tests__/user.test.js
-const mockingoose = require('mockingoose');
+const mockify = require('mongoose-mockify');
 const model = require('./user');
 
 describe('test mongoose User model', () => {
@@ -114,7 +106,7 @@ describe('test mongoose User model', () => {
       }
     };
 
-    mockingoose(model).toReturn(finderMock, 'findOne'); // findById is findOne
+    mockify(model).toReturn(finderMock, 'findOne'); // findById is findOne
 
     return model.findById('507f191e810c19729de860ea').then((doc) => {
       expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
@@ -123,37 +115,37 @@ describe('test mongoose User model', () => {
 });
 ```
 
-#### mockingoose(Model).reset(operation = undefined)
+#### mockify(Model).reset(operation = undefined)
 
 will reset Model mock, if pass an operation, will reset only this operation mock.
 
 ```js
 it('should reset model mock', () => {
-  mockingoose(model).toReturn({ name: '1' });
-  mockingoose(model).toReturn({ name: '2' }, 'save');
+  mockify(model).toReturn({ name: '1' });
+  mockify(model).toReturn({ name: '2' }, 'save');
 
-  mockingoose(model).reset(); // will reset all operations;
-  mockingoose(model).reset('find'); // will reset only find operations;
+  mockify(model).reset(); // will reset all operations;
+  mockify(model).reset('find'); // will reset only find operations;
 });
 ```
 
-you can also chain `mockingoose#ModelName` operations:
+you can also chain `mockify#ModelName` operations:
 
 ```js
-mockingoose(model)
+mockify(model)
   .toReturn({ name: 'name' })
   .toReturn({ name: 'a name too' }, 'findOne')
   .toReturn({ name: 'another name' }, 'save')
   .reset('find');
 ```
 
-#### mockingoose.resetAll()
+#### mockify.resetAll()
 
 will reset all mocks.
 
 ```js
 beforeEach(() => {
-  mockingoose.resetAll();
+  mockify.resetAll();
 });
 ```
 
@@ -176,12 +168,13 @@ beforeEach(() => {
 - [x] `deleteMany` - for deleteMany query
 - [x] `aggregate` - for aggregate framework
 - [x] `insertMany` - for `Model.insertMany()` bulk insert, can also pass `{ lean: true, rawResult: true }` options.
+- [x] `orFail` - for findOne().orFail() query or similar ones.
 
 ### Notes
 
 All operations work with `exec`, `promise` and `callback`.
 
-- if you are using `Model.create` and you don't pass a mock with mockingoose you'll receive the mongoose created doc (with ObjectId and transformations)
+- if you are using `Model.create` and you don't pass a mock with mockify you'll receive the mongoose created doc (with ObjectId and transformations)
 
 - validations are working as expected.
 
@@ -189,10 +182,10 @@ All operations work with `exec`, `promise` and `callback`.
 
 - `deleteOne` and `updateOne` operation returns original mocked object.
 
-- you can simulate Error by passing an Error to mockingoose:
+- you can simulate Error by passing an Error to mockify:
 
   ```js
-  mockingoose(model).toReturn(new Error('My Error'), 'save');
+  mockify(model).toReturn(new Error('My Error'), 'save');
 
   return model
     .create({ name: 'name', email: 'name@email.com' })
@@ -218,27 +211,26 @@ All operations work with `exec`, `promise` and `callback`.
     saveCount: 1,
   };
 
-  mockingoose(User).toReturn(doc);
+  mockify(User).toReturn(doc);
 
   const result = await User.find();
 
   expect(result).toMatchObject(doc);
   ```
 
-- you can mock the `Model.exists()` by passing the `findOne` operator. see [Issue #69](https://github.com/alonronin/mockingoose/issues/69)
-- no connection is made to the database (mongoose.connect is jest.fn())
+- no connection is made to the database (mongoose.connect is mock function)
 
-- will work with node 6.4.x. tested with mongoose 4.x and jest 20.x.
+- will work with node 6.4.x. tested with mongoose 4.x and jest 20.x and mocha.
 
 - check tests for more, feel free to fork and contribute.
 
 #### Recent Changes:
 
-- `mockingoose.ModelName` is deprecated, `mockingoose(Model)` is the now the recommended usage, with `Model` being a Mongoose model class.
+- `mockify.ModelName` is deprecated, `mockify(Model)` is the now the recommended usage, with `Model` being a Mongoose model class.
 
   Alternatively, you may pass a string with the model name.
 
-- `mockingoose(Model).toReturn((query) => value)` can now take also take a function as a parameter.
+- `mockify(Model).toReturn((query) => value)` can now take also take a function as a parameter.
 
   The function is called with either a [Query](https://mongoosejs.com/docs/api.html#Query) or [Aggregate](https://mongoosejs.com/docs/api.html#Aggregate) object from Mongoose, depending on the request. This allows tests to ensure that proper queries are sent out, and helps with regression testing.
 
