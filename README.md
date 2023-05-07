@@ -1,4 +1,4 @@
-# Mongoose Mockify [![Run Test and Lint](https://github.com/jazimabbas/mock-mongoose/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/jazimabbas/mock-mongoose/actions/workflows/nodejs.yml)
+# Mock Mongoose [![Run Test and Lint](https://github.com/jazimabbas/mock-mongoose/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/jazimabbas/mock-mongoose/actions/workflows/nodejs.yml)
 
 ![logo]
 
