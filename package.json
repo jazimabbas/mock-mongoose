@@ -1,6 +1,6 @@
 {
-  "name": "mongoose-mockify",
-  "version": "1.0.0",
+  "name": "@jazim/mock-mongoose",
+  "version": "1.0.1",
   "description": "Package for mocking Mongoose models that can be utilized with any node.js testing library such as Jest, Mocha, and Vitest etc..",
   "main": "./lib",
   "types": "./types.d.ts",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jazimabbas/mongoose-mockify.git"
+    "url": "git+https://github.com/jazimabbas/mock-mongoose.git"
   },
   "keywords": [
     "testing",
@@ -29,9 +29,9 @@
   "author": "Jazim Abbas",
   "license": "The Unlicense",
   "bugs": {
-    "url": "https://github.com/jazimabbas/mongoose-mockify/issues"
+    "url": "https://github.com/jazimabbas/mock-mongoose/issues"
   },
-  "homepage": "https://github.com/jazimabbas/mongoose-mockify#readme",
+  "homepage": "https://github.com/jazimabbas/mock-mongoose#readme",
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/preset-env": "^7.20.2",

@@ -1,4 +1,4 @@
-# Mongoose Mockify [![Run Test and Lint](https://github.com/jazimabbas/mongoose-mockify/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/jazimabbas/mongoose-mockify/actions/workflows/nodejs.yml)
+# Mongoose Mockify [![Run Test and Lint](https://github.com/jazimabbas/mock-mongoose/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/jazimabbas/mock-mongoose/actions/workflows/nodejs.yml)
 
 ![logo]
 
@@ -9,13 +9,13 @@
 With NPM:
 
 ```bash
-$ npm i mongoose-mockify -D
+$ npm i @jazim/mock-mongoose -D
 ```
 
 ## Import the library
 
 ```js
-const mockify = require('mongoose-mockify');
+const mockify = require('@jazim/mock-mongoose');
 ```
 
 ## Usage
@@ -40,7 +40,7 @@ Returns a plain object.
 
 ```js
 // __tests__/user.test.js
-const mockify = require('mongoose-mockify');
+const mockify = require('@jazim/mock-mongoose');
 
 const model = require('./user');
 
@@ -88,7 +88,7 @@ You can use [snapshots](https://jestjs.io/docs/en/snapshot-testing) to automatic
 
 ```js
 // __tests__/user.test.js
-const mockify = require('mongoose-mockify');
+const mockify = require('@jazim/mock-mongoose');
 const model = require('./user');
 
 describe('test mongoose User model', () => {

@@ -4,7 +4,7 @@ const User = require('./User');
 
 jest.setTimeout(500);
 
-describe('mongoose-mockify', () => {
+describe('mock-mongoose', () => {
   beforeEach(() => {
     mockify.resetAll();
     jest.clearAllMocks();
